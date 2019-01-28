@@ -1,26 +1,33 @@
 package features.step_definitions;
 
         import com.gitfetch.telstra_gitdemo.domain.GitData;
-        import com.gitfetch.telstra_gitdemo.domain.GitResult;
         import cucumber.api.java.en.And;
         import cucumber.api.java.en.Then;
         import cucumber.api.java.en.When;
         import lombok.extern.slf4j.Slf4j;
+        import org.hamcrest.Matchers;
+        import org.springframework.http.MediaType;
         import org.springframework.http.ResponseEntity;
 
-        import java.util.List;
+        import javax.validation.constraints.AssertTrue;
+        import java.io.IOException;
 
+        import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+        import static java.util.Arrays.*;
+        import static junit.framework.TestCase.assertTrue;
+        import static junit.framework.TestCase.fail;
+        import static org.hamcrest.CoreMatchers.instanceOf;
         import static org.hamcrest.MatcherAssert.assertThat;
         import static org.hamcrest.core.IsEqual.equalTo;
 
 @Slf4j
 public class GitStepDefs extends TelstraGitdemoApplicationTests {
 
-    private ResponseEntity<GitData> response;
+    private ResponseEntity<GitData[]> response;
 
     @When("^client calls /rest/v1/gitrepo/2$")
     public void clientCallsRestVGitrepo() {
-        response = restTemplate.getForEntity(gitEndPointWith_validData(), GitData.class);
+        response = getDataWithValidData();
     }
 
     @Then("^the client receives response status code of (\\d+)$")
@@ -30,42 +37,35 @@ public class GitStepDefs extends TelstraGitdemoApplicationTests {
 
     @And("^the body has size of (\\d+)$")
     public void theBodyHasSizeOf(int size)throws Throwable  {
-        assertThat(getDataWithValidData().getBody().getItems().size(),equalTo(size));
+        assertThat(response.getBody().length , equalTo(size));
     }
 
 
     @And("^the content type is (json|any)$")
     public void theContentTypeIs(String contentType) {
-
         if ("json".equalsIgnoreCase(contentType)) {
-            assertThat(response.getHeaders().getContentType() ,equalTo("application/json;charset=UTF-8"));
+            assertTrue(response.getHeaders().getContentType().includes(MediaType.APPLICATION_JSON));
         }
-//        if ("json".equalsIgnoreCase(contentType)) {
-//        assertThat(responseEntity1.getHeaders().getContentType(),equalTo("application/json;charset=UTF-8"));
-//    }
-}
+    }
 
-//    @And("^the body has json path (.*) of type (numeric|object|string)$")
-//    public void theBodyHasJsonPath$OfTypeObject(String path, String type) throws IOException {
-//
-//        switch (type) {
-//            case "object":
-//                assertThat(
-//                        getDataWithValidData().getBody().getItems(), hasJsonPath(path, Matchers.instanceOf(Object.class)));
-//                break;
-//            case "string":
-//                assertThat(
-//                        getDataWithValidData().getBody().getItems(), hasJsonPath(path, Matchers.instanceOf(String.class)));
-////                assertThat(getDataWithInvalidData().getBody().getErrorStaus(),Matchers.instanceOf(String.class));
-//                break;
-//            case "numeric":
-//                assertThat(
-//                        getDataWithValidData().getBody().getItems(), hasJsonPath(path, Matchers.instanceOf(Number.class)));
-//                break;
-//            default:
-//                fail("Not a recognised type.");
-//        }
-//    }
+   @And("^the body has json path (.*) of type (numeric|object|string)$")
+    public void theBodyHasJsonPath$OfTypeObject(String path, String type) throws IOException {
+        switch (type) {
+            case "object":
+                assertThat(response.getBody(), instanceOf(Object.class));
+                break;
+            case "string":
+                assertThat(
+                        stream(response.getBody()).findFirst().get().getHtml_url(), instanceOf(String.class));
+                break;
+            case "numeric":
+                assertThat(
+                        response.getBody(), hasJsonPath(path, Matchers.instanceOf(Number.class)));
+                break;
+            default:
+                fail("Not a recognised type.");
+        }
+ }
 //
 //    @Then("^the service uri returns status code (\\d+)$")
 //    public void theServiceUriReturnsStatusCode(int statusCode) {

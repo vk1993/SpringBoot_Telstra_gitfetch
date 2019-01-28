@@ -1,11 +1,9 @@
 package com.gitfetch.telstra_gitdemo.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitfetch.telstra_gitdemo.domain.GitData;
 import com.gitfetch.telstra_gitdemo.domain.GitResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +20,7 @@ public class GitServiceImpl implements GitService {
     RestTemplate restTemplate;
 
     @Override
-    public List<GitData> getData(int numebrOfRepo) {
+    public ResponseEntity<List<GitData>> getData(int numebrOfRepo) {
         log.info("inside getData Impl....");
 
         String lastweek = today.minus(1, ChronoUnit.WEEKS).toString();
@@ -33,6 +31,6 @@ public class GitServiceImpl implements GitService {
         String downStreamUrl= "https://api.github.com/search/repositories?q=created:>"+lastweek+"&sort=stars&order=desc&per_page="+numebrOfRepo;
         ResponseEntity<GitResult> downstreamResult = restTemplate.getForEntity(downStreamUrl,GitResult.class);
 
-        return downstreamResult.getBody().getItems();
+        return ResponseEntity.ok().body(downstreamResult.getBody().getItems());
     }
 }

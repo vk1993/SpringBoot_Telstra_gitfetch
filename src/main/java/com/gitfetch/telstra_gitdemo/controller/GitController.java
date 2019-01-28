@@ -24,8 +24,8 @@ public class GitController {
     GitService gitService;
 
     @GetMapping(value = "/gitrepo/{numOfRepo}",produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<GitData> helloWorld(@PathVariable("numOfRepo") int number) throws Exception{
-        return (List<GitData>) gitService.getData(number);
+    public ResponseEntity<List<GitData>> helloWorld(@PathVariable("numOfRepo") int number) throws Exception{
+        return gitService.getData(number);
     }
 
     @Bean

@@ -7,5 +7,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface GitService {
-    List<GitData> getData(int numebrofRepo);
+    ResponseEntity<List<GitData>> getData(int numebrofRepo);
 }

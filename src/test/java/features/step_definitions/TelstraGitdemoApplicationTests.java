@@ -3,7 +3,6 @@ package features.step_definitions;
 import com.gitfetch.telstra_gitdemo.Utills.ErrorResourse;
 import com.gitfetch.telstra_gitdemo.domain.GitData;
 
-import com.gitfetch.telstra_gitdemo.domain.GitResult;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +36,15 @@ public abstract class TelstraGitdemoApplicationTests {
         return SERVER_URL +  GITDATA_ENDPOINT_WITH_STRING;
     }
 
-
-    ResponseEntity<GitResult> getDataWithValidData() {
-
-        return restTemplate.getForEntity(gitEndPointWith_validData(), GitResult.class);
+    ResponseEntity<GitData[]> getDataWithValidData() {
+        return restTemplate.getForEntity(gitEndPointWith_validData(), GitData[].class );
     }
 
-    ResponseEntity<ErrorResourse> getDataWithInvalidData() {
-        return restTemplate.getForEntity(gitEndPointWith_invalidData(), ErrorResourse.class);
-    }
+
+
+//    ResponseEntity<ErrorResourse> getDataWithInvalidData() {
+//        return restTemplate.getForEntity(gitEndPointWith_invalidData(), ErrorResourse.class);
+//    }
 
 }
 
